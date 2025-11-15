@@ -21,7 +21,7 @@ class UserManager {
         user.createdAt = Date()
         user.currentStreak = 0
         user.longestStreak = 0
-        user.lastUploadDate = nil
+        user.lastUploadDate = nil 
         
         // Create associated profile
         let userProfile = UserProfile(context: context)
