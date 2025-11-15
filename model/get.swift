@@ -32,3 +32,7 @@ func getRestriction(uid: Int) -> String {
 func getGoal(uid: Int) -> String {
     return getUserById(uid).healthGoal
 }
+
+func getPast(uid: Int) -> String {
+    return getMeals(userId: userId, from: calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: now)), to: calendar.date(byAdding: .weekOfYear, value: 1, to: weekStart)
+}
