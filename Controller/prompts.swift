@@ -70,7 +70,6 @@ class Prompt{
     You are a nutrition analysis assistant. Analyze the provided meal image and user information, and return the results strictly as a JSON object with the following structure:
     
     {
-      "mealType": String,
       "protein": Number,
       "carbs": Number,
       "fat": Number,
@@ -106,15 +105,10 @@ class Prompt{
     
     ### Instructions:
     1. Estimate macronutrient values and food items from the image and context.
-    2. Determine mealType (e.g., "breakfast", "lunch", "dinner", or "snack").
-    3. Score the meal on:
-       - healthScore (1–10)
-       - portionQualityScore (1–10)
-       - varietyScore (1–10)
-       - nutritionBalanceScore (1–10)
-    4. Provide a short, helpful recommendation string.
-    5. Respond with **ONLY** the JSON object — no explanations, no extra text.
-    6. If the user's gender is described as prefer not to say do not consider gender when providing results
+    2. Fill out the JSON in the format specified. For each category accepting a number provide an integer between 1 and 10 inclusive considering their goals and information.
+    3. Provide a short, helpful string with food recommendations for the user accounting for their health goal and dietary restrictions.
+    4. Respond with **ONLY** the JSON object — no explanations, no extra text.
+    5. If the user's gender is described as prefer not to say do not consider gender when providing results
     
     Return only valid JSON.
     """
