@@ -6,33 +6,40 @@
 //
 
 func getAge(uid: Int) -> Int {
-    return getUserById(uid).age
+    let userManager = UserManager()
+    return userManager.getUserById(uid).age
 }
 
 func getWeight(uid: Int) -> Int {
-    return getUserById(uid).weight
+    let userManager = UserManager()
+    return userManager.getUserById(uid).weight
 }
 
 func getHeight(uid: Int) -> Int {
-    return getUserById(uid).height
+    let userManager = UserManager()
+    return userManager.getUserById(uid).height
 }
 
-func getExericse(uid: Int) -> Double{
-    return getUserById(uid).activityLevel
+func getExercise(uid: Int) -> Double{
+    let userManager = UserManager()
+    return userManager.getUserById(uid).activityLevel
 }
 
 func getGender(uid: Int) -> String {
-    return getUserById(uid).gender
+    let userManager = UserManager()
+    return userManager.getUserById(uid)?.gender
 }
 
 func getRestriction(uid: Int) -> String {
-    return getUserById(uid).dietType
+    let userManager = UserManager()
+    return userManager.getUserById(uid).dietType
 }
 
 func getGoal(uid: Int) -> String {
-    return getUserById(uid).healthGoal
+    let userManager = UserManager()
+    return userManager.getUserById(uid).healthGoal
 }
 
 func getPast(uid: Int) -> String {
-    return getMeals(userId: userId, from: calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: now)), to: calendar.date(byAdding: .weekOfYear, value: 1, to: weekStart)
+    return "0" // TODO
 }

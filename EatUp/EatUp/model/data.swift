@@ -673,17 +673,17 @@ struct UserProfileData {
 
 struct ClaudeAnalysisResult {
     let protein: Float
-    let carbs: Float
-    let fat: Float
-    let fiber: Float
-    let sugar: Float
-    let sodium: Float
-    let foodItems: String
-    let healthScore: Float
-    let portionQualityScore: Float
-    let varietyScore: Float
-    let macroBalanceScore: Float
-    let recommendations: String
+        let carbs: Float
+        let fat: Float
+        let fiber: Float
+        let sugar: Float
+        let sodium: Float
+        let foodItems: [String]
+        let healthScore: Float
+        let portionQualityScore: Float
+        let varietyScore: Float
+        let nutritionBalanceScore: Float
+        let recommendations: String
 }
 
 struct DailyNutritionTotals {
