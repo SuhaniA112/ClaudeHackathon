@@ -9,8 +9,6 @@ import SwiftAnthropic
 import UIKit
 
 
-
-
 func getFeedback(img: UIImage, usr : Int) -> String {
     
     prompt = getPrompt(img, usr)
