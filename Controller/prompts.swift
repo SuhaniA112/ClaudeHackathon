@@ -11,27 +11,36 @@ import UIKit
 package model
 
 let client = Anthropic(apiKey: Bundle.main.object(forInfoDictionaryKey: "ANTHROPIC_API_KEY") as! String)
+MealManager mm = new MealManager();
 
-func getFeedback(img: UIImage, usr : Int, desc: String) -> String {
+func getFeedback(img: UIImage, usr : Int, desc: String, mealType:String) -> String {
     
-    prompt = getPrompt(img, usr, desc)
+    prompt = getPrompt(img, usr, desc, mealType)
     
     let response = try await client.messages.create(
         model: "claude-3-5-sonnet-latest",
-        maxTokens: 512,
+        maxTokens: 250,
         messages: [
             .init(role: .user, content: .text(prompt))
         ]
     )
-    let text = response.content.first?.text ?? "(no response)"
     
-    mm.logMeal(usr, img, text);
+    let jsonString = response.content.first?.text ?? ""
+
+    let analysis = try JSONDecoder().decode(
+        ClaudeAnalysisResult.self,
+        from: Data(jsonString.utf8)
+    )
     
-    return msg;
+    mm.logMeal(usr, img, analysis);
+    
+    // create text output for what the user should see
+    
+    return text;
 }
 
 
-func getPrompt(img: UIImage, usr: Int, usrdesc : String) -> String {
+func getPrompt(img: UIImage, usr: Int, usrdesc : String, mealType: String) -> String {
     
     // fetch: user age, user weight, user past data, user health goal
     let base64Image = img.base64EncodedString()
@@ -48,13 +57,57 @@ func getPrompt(img: UIImage, usr: Int, usrdesc : String) -> String {
         desc = " The food contains: " + usrdesc + "."
     }
     
-    if (gender is "prefer not to say") {
-        String prompt = "Please respond with an array of integers with comma deliminators. For this image rate the food proportions in terms of protein, carbohydrates, and fat consumption. Provide me with 3 numbers, each on a scale of 1-10 corresponding to each category listed. The food image is: " + base64Image + "." + desc + "For an individual with age " + age + " and weight " + weight + " pounds and exercises " + exercise + " times per week and a health goal of " + health goal + " how healthy is their meal on a scale of 1 - 10? " + "Also, what are some suggestions for improving this meal? They're dietary restrictions are " + restrictions + "Additionally, this the average of their past weeks in the same format of 4 numbers, how does today compare to that: " + past
-    } else {
-        String prompt = "Please respond with an array of integers with comma deliminators. For this image rate the food proportions in terms of protein, carbohydrates, and fat consumption. Provide me with 3 numbers, each on a scale of 1-10 corresponding to each category listed. The food image is: " + base64Image + "." + desc + "For an individual of gender " + gender + " with age " + age + " and weight " + weight + " pounds and exercises " + exercise + " times per week and a health goal of " + health goal + " how healthy is their meal on a scale of 1 - 10? " + "Also, what are some suggestions for improving this meal? They're dietary restrictions are " + restrictions + "Additionally, this the average of their past weeks in the same format of 4 numbers, how does today compare to that: " + past
+    let prompt = """
+    You are a nutrition analysis assistant. Analyze the provided meal image and user information, and return the results strictly as a JSON object with the following structure:
+
+    {
+      "mealType": String,
+      "protein": Number,
+      "carbs": Number,
+      "fat": Number,
+      "fiber": Number,
+      "sugar": Number,
+      "sodium": Number,
+      "foodItems": [String],
+      "healthScore": Number,
+      "portionQualityScore": Number,
+      "varietyScore": Number,
+      "nutritionBalanceScore": Number,
+      "recommendations": String
     }
-    
-    
+
+    ### Image (base64 encoded):
+    \(base64Image)
+
+    ### Additional User Description:
+    \(descText)
+
+    ### User Information:
+    - Age: \(age)
+    - Weight: \(weight) lbs
+    - Gender: \(gender)
+    - Meal Type: \(mealType)
+    - Exercise frequency: \(exercise) times per week
+    - Health goal: \(goal)
+    - Dietary restrictions: \(restrictions)
+
+    ### Past Meal Averages:
+    \(past)
+
+    ### Instructions:
+    1. Estimate macronutrient values and food items from the image and context.
+    2. Determine mealType (e.g., "breakfast", "lunch", "dinner", or "snack").
+    3. Score the meal on:
+       - healthScore (1–10)
+       - portionQualityScore (1–10)
+       - varietyScore (1–10)
+       - nutritionBalanceScore (1–10)
+    4. Provide a short, helpful recommendation string.
+    5. Respond with **ONLY** the JSON object — no explanations, no extra text.
+    6. If the user's gender is described as prefer not to say do not consider gender when providing results
+
+    Return only valid JSON.
+    """
     
 }
 
