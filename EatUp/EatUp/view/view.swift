@@ -9,7 +9,7 @@ struct MealTypeAnalytics {
     let averagePortionScore: Float
     let averageVarietyScore: Float
     let averageBalanceScore: Float
-    
+    //hihello
     // Macro totals for pie chart
     let totalProtein: Float
     let totalCarbs: Float
