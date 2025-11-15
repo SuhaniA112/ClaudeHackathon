@@ -13,6 +13,10 @@ package model
 let client = Anthropic(apiKey: Bundle.main.object(forInfoDictionaryKey: "ANTHROPIC_API_KEY") as! String)
 MealManager mm = new MealManager();
 
+struct Secrets {
+    static let claudeAPIKey = ProcessInfo.processInfo.environment["CLAUDE_API_KEY"]
+}
+
 func getFeedback(img: UIImage, usr : Int, desc: String, mealType:String) -> String {
     
     prompt = getPrompt(img, usr, desc, mealType)
@@ -47,6 +51,7 @@ func getPrompt(img: UIImage, usr: Int, usrdesc : String, mealType: String) -> St
     
     age = model.getAge(usr);
     weight = model.getWeight(usr);
+    height = model.getHeight(usr);
     exercise = model.getExercise(usr);
     gender = model.getGender(usr);
     restrictions = model.getRefstrictions(usr);
@@ -85,6 +90,7 @@ func getPrompt(img: UIImage, usr: Int, usrdesc : String, mealType: String) -> St
     ### User Information:
     - Age: \(age)
     - Weight: \(weight) lbs
+    - Height: \(height) inches
     - Gender: \(gender)
     - Meal Type: \(mealType)
     - Exercise frequency: \(exercise) times per week
