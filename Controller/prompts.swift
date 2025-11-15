@@ -59,7 +59,7 @@ class Prompt{
         exercise = model.getExercise(usr);
         gender = model.getGender(usr);
         restrictions = model.getRefstrictions(usr);
-        past = ; // TODO
+        past = getPast(usr);
         healthGoal = model.getGoal(usr);
         desc = " "
         if (usrdesc != null){
