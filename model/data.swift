@@ -11,7 +11,7 @@ class UserManager {
     func createUser(email: String, profile: UserProfileData) -> User? {
         // Check if email already exists
         if let existingUser = getUserByEmail(email) {
-            print("⚠️ User with email \(email) already exists")
+            print("User with email \(email) already exists")
             return existingUser
         }
         
@@ -37,7 +37,7 @@ class UserManager {
         user.profile = userProfile
         
         CoreDataManager.shared.saveContext()
-        print("✅ Created user: \(email) with ID: \(user.userId?.uuidString ?? "")")
+        print("Created user: \(email) with ID: \(user.userId?.uuidString ?? "")")
         return user
     }
     
@@ -50,7 +50,7 @@ class UserManager {
         do {
             return try context.fetch(fetchRequest).first
         } catch {
-            print("❌ Failed to fetch user by email: \(error)")
+            print("Failed to fetch user by email: \(error)")
             return nil
         }
     }
@@ -64,7 +64,7 @@ class UserManager {
         do {
             return try context.fetch(fetchRequest).first
         } catch {
-            print("❌ Failed to fetch user by ID: \(error)")
+            print("Failed to fetch user by ID: \(error)")
             return nil
         }
     }
@@ -83,7 +83,7 @@ class UserManager {
         profile.fatTarget = updates.fatTarget
         
         CoreDataManager.shared.saveContext()
-        print("✅ Updated profile for user: \(userId)")
+        print("Updated profile for user: \(userId)")
     }
 }
 
@@ -97,7 +97,7 @@ class MealManager {
         // Save image to file system
         guard let imageURL = FileSystemManager.shared.saveImage(image, userId: userId),
               let thumbnailURL = FileSystemManager.shared.saveThumbnail(image, userId: userId) else {
-            print("❌ Failed to save images")
+            print("Failed to save images")
             return nil
         }
         
@@ -131,7 +131,7 @@ class MealManager {
         meal.weekNumber = Int16(Calendar.current.component(.weekOfYear, from: Date()))
         
         CoreDataManager.shared.saveContext()
-        print("✅ Logged meal for user \(userId)")
+        print("Logged meal for user \(userId)")
         
         // Trigger weekly stats update if needed
         WeeklyStatsManager.shared.updateWeeklyStats(for: userId)
@@ -150,7 +150,7 @@ class MealManager {
         do {
             return try context.fetch(fetchRequest)
         } catch {
-            print("❌ Failed to fetch meals: \(error)")
+            print("Failed to fetch meals: \(error)")
             return []
         }
     }
@@ -167,7 +167,7 @@ class MealManager {
         do {
             return try context.fetch(fetchRequest)
         } catch {
-            print("❌ Failed to fetch meals for date range: \(error)")
+            print("Failed to fetch meals for date range: \(error)")
             return []
         }
     }
@@ -297,7 +297,7 @@ class WeeklyStatsManager {
         }
         
         CoreDataManager.shared.saveContext()
-        print("✅ Updated weekly stats for user \(userId)")
+        print("Updated weekly stats for user \(userId)")
     }
     
     // Get weekly stat for specific week
@@ -325,7 +325,7 @@ class WeeklyStatsManager {
         do {
             return try context.fetch(fetchRequest)
         } catch {
-            print("❌ Failed to fetch weekly stats: \(error)")
+            print("Failed to fetch weekly stats: \(error)")
             return []
         }
     }
@@ -422,7 +422,7 @@ struct ClaudeAnalysisResult {
     let healthScore: Float
     let portionQualityScore: Float
     let varietyScore: Float
-    let nutritionBalanceScore: Float
+    let macroBalanceScore: Float
     let recommendations: String
 }
 
