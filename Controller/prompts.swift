@@ -13,6 +13,10 @@ package model
 let client = Anthropic(apiKey: Bundle.main.object(forInfoDictionaryKey: "ANTHROPIC_API_KEY") as! String)
 MealManager mm = new MealManager();
 
+struct Secrets {
+    static let claudeAPIKey = ProcessInfo.processInfo.environment["CLAUDE_API_KEY"]
+}
+
 func getFeedback(img: UIImage, usr : Int, desc: String, mealType:String) -> String {
     
     prompt = getPrompt(img, usr, desc, mealType)
