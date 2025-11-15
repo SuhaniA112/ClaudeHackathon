@@ -93,7 +93,7 @@ class MealManager {
     let context = CoreDataManager.shared.context
     
     // CREATE: Log meal for specific user
-    func logMeal(userId: UUID, image: UIImage, analysis: ClaudeAnalysisResult) -> Meal? {
+    func logMeal(userId: UUID, image: UIImage, mealType: String, analysis: ClaudeAnalysisResult) -> Meal? {
         // Save image to file system
         guard let imageURL = FileSystemManager.shared.saveImage(image, userId: userId),
               let thumbnailURL = FileSystemManager.shared.saveThumbnail(image, userId: userId) else {
@@ -109,7 +109,7 @@ class MealManager {
         meal.thumbnailURL = thumbnailURL.path
         
         // Nutrition data
-        meal.mealType = analysis.mealType
+        meal.mealType = mealType
         meal.protein = analysis.protein
         meal.carbs = analysis.carbs
         meal.fat = analysis.fat
@@ -171,6 +171,21 @@ class MealManager {
             return []
         }
     }
+
+    // READ: Get meals by type for a user
+    func getMealsByType(userId: UUID, mealType: String, limit: Int = 20) -> [Meal] {
+        let fetchRequest: NSFetchRequest<Meal> = Meal.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "userId == %@ AND mealType == %@", userId as CVarArg, mealType)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
+        fetchRequest.fetchLimit = limit
+        
+        do {
+            return try context.fetch(fetchRequest)
+        } catch {
+            print("Failed to fetch meals by type: \(error)")
+            return []
+        }
+    }
     
     // READ: Get today's meals
     func getTodaysMeals(userId: UUID) -> [Meal] {
@@ -179,6 +194,27 @@ class MealManager {
         let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
         
         return getMeals(userId: userId, from: startOfDay, to: endOfDay)
+    }
+
+    // READ: Get today's meals filtered by type
+    func getTodaysMealsByType(userId: UUID, mealType: String) -> [Meal] {
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: Date())
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
+        
+        let fetchRequest: NSFetchRequest<Meal> = Meal.fetchRequest()
+        fetchRequest.predicate = NSPredicate(
+            format: "userId == %@ AND mealType == %@ AND timestamp >= %@ AND timestamp <= %@",
+            userId as CVarArg, mealType, startOfDay as CVarArg, endOfDay as CVarArg
+        )
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "timestamp", ascending: false)]
+        
+        do {
+            return try context.fetch(fetchRequest)
+        } catch {
+            print("Failed to fetch today's meals by type: \(error)")
+            return []
+        }
     }
     
     // ANALYTICS: Calculate daily totals
@@ -411,7 +447,6 @@ struct UserProfileData {
 }
 
 struct ClaudeAnalysisResult {
-    let mealType: String
     let protein: Float
     let carbs: Float
     let fat: Float
