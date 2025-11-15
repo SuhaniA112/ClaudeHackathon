@@ -29,9 +29,9 @@ class UserManager {
         userProfile.gender = profile.gender
         userProfile.activityLevel = profile.activityLevel
         userProfile.dietType = profile.dietType
-        userProfile.proteinTarget = profile.proteinTarget
-        userProfile.carbTarget = profile.carbTarget
-        userProfile.fatTarget = profile.fatTarget
+//        userProfile.proteinTarget = profile.proteinTarget
+//        userProfile.carbTarget = profile.carbTarget
+//        userProfile.fatTarget = profile.fatTarget
         userProfile.healthGoal = profile.healthGoal
         
         user.profile = userProfile

@@ -51,6 +51,7 @@ func getPrompt(img: UIImage, usr: Int, usrdesc : String, mealType: String) -> St
     
     age = model.getAge(usr);
     weight = model.getWeight(usr);
+    height = model.getHeight(usr);
     exercise = model.getExercise(usr);
     gender = model.getGender(usr);
     restrictions = model.getRefstrictions(usr);
@@ -89,6 +90,7 @@ func getPrompt(img: UIImage, usr: Int, usrdesc : String, mealType: String) -> St
     ### User Information:
     - Age: \(age)
     - Weight: \(weight) lbs
+    - Height: \(height) inches
     - Gender: \(gender)
     - Meal Type: \(mealType)
     - Exercise frequency: \(exercise) times per week
