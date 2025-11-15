@@ -152,6 +152,10 @@ struct DailyNutritionView: View {
         ScrollView {
             VStack(spacing: 20) {
                 // Overall Day Score
+                if let stats = userStats {
+                    UserStatsCard(stats: stats)
+                }
+                
                 if let analytics = analytics {
                     DayScoreCard(score: analytics.overallDayScore)
                     
@@ -179,6 +183,91 @@ struct DailyNutritionView: View {
                 userId: userId,
                 date: date
             )
+            userStats = UserManager.shared.getUserStats(userId)
+        }
+    }
+}
+
+// User Stats Card View 
+struct UserStatsCard: View {
+    let stats: UserStats
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            // Header
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Your Journey")
+                        .font(.headline)
+                    Text("Member since \(stats.joinedDateString)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                Spacer()
+                Text("\(stats.daysOnApp) days")
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.blue)
+            }
+            
+            Divider()
+            
+            // Streak Stats
+            HStack(spacing: 30) {
+                // Current Streak
+                VStack(spacing: 8) {
+                    HStack(spacing: 4) {
+                        Text("🔥")
+                            .font(.title)
+                        Text("\(stats.currentStreak)")
+                            .font(.system(size: 32, weight: .bold))
+                            .foregroundColor(.orange)
+                    }
+                    Text("Current Streak")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Divider()
+                    .frame(height: 50)
+                
+                // Longest Streak
+                VStack(spacing: 8) {
+                    HStack(spacing: 4) {
+                        Text("🏆")
+                            .font(.title)
+                        Text("\(stats.longestStreak)")
+                            .font(.system(size: 32, weight: .bold))
+                            .foregroundColor(.purple)
+                    }
+                    Text("Best Streak")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            // Motivational message
+            if stats.currentStreak > 0 {
+                Text(streakMessage(for: stats.currentStreak))
+                    .font(.caption)
+                    .foregroundColor(.blue)
+                    .padding(.top, 4)
+            }
+        }
+        .padding()
+        .background(Color(.systemBackground))
+        .cornerRadius(12)
+        .shadow(radius: 2)
+    }
+    
+    func streakMessage(for streak: Int) -> String {
+        switch streak {
+        case 1: return "Great start! Keep it going tomorrow! 💪"
+        case 2...6: return "You're building momentum! 🚀"
+        case 7...13: return "One week down! You're on fire! 🔥"
+        case 14...29: return "Two weeks strong! Consistency is key! ⭐"
+        case 30...: return "Amazing dedication! You're unstoppable! 🎉"
+        default: return ""
         }
     }
 }
