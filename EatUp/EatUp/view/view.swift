@@ -147,6 +147,7 @@ struct DailyNutritionView: View {
     let userId: UUID
     let date: Date
     @State private var analytics: DailyAnalytics?
+    @State private var userStats: UserStats?
     
     var body: some View {
         ScrollView {

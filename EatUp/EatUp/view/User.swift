@@ -46,6 +46,7 @@ struct DietaryPreference: Identifiable {
 struct ContentView: View {
     @State private var currentScreen = 0
     @State private var user = User()
+    @State private var loggedInUserId: UUID? = UUID()
     @State private var selectedGoals: Set<UUID> = []
     @State private var selectedConditions: Set<UUID> = []
     @State private var selectedDietary: Set<UUID> = []
@@ -69,7 +70,7 @@ struct ContentView: View {
                 case 6:
                     DietaryPreferencesView(selectedDietary: $selectedDietary, currentScreen: $currentScreen)
                 case 7:
-                    CameraView(currentScreen: $currentScreen)
+                    CameraView(currentScreen: $currentScreen, userId: loggedInUserId ?? UUID())
                 default:
                     MainTabView()
                 }
@@ -556,6 +557,15 @@ struct CameraView: View {
     @Binding var currentScreen: Int
     @State private var mealType = "Breakfast"
     
+    var userId: UUID
+    @State private var capturedImage: UIImage?
+    @State private var showImagePicker = false
+    @State private var isAnalyzing = false
+    @State private var analysisResult: String?
+    @State private var showError = false
+    @State private var errorMessage = ""
+    @State private var userDescription = ""
+
     var body: some View {
         VStack {
             Text("EatUp")
@@ -566,15 +576,38 @@ struct CameraView: View {
             
             Spacer()
             
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.lightGray)
+            if let image = capturedImage {
+                Image(uiImage: image)
+                .resizable()
+                .scaledToFit()
                 .frame(height: 300)
-                .overlay(
-                    Image(systemName: "camera.fill")
-                        .font(.system(size: 60))
-                        .foregroundColor(.gray)
-                )
+                .cornerRadius(12)
                 .padding(.horizontal, 30)
+            } else {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.lightGray)
+                    .frame(height: 300)
+                    .overlay(
+                        VStack(spacing: 16) {
+                            Image(systemName: "camera.fill")
+                                .font(.system(size: 60))
+                                .foregroundColor(.gray)
+                            Button("Take/Choose Photo") {
+                                showImagePicker = true
+                            }
+                            .padding()
+                            .background(Color.secondaryBlue)
+                            .foregroundColor(.white)
+                            .cornerRadius(8)
+                        }
+                    )
+                    .padding(.horizontal, 30)
+            }
+
+            TextField("Additional details (optional)", text: $userDescription)
+                .textFieldStyle(CustomTextFieldStyle())
+                .padding(.horizontal, 30)
+                .padding(.top, 16)
             
             VStack(alignment: .leading, spacing: 12) {
                 Text("What is this meal?")
@@ -601,6 +634,21 @@ struct CameraView: View {
             }
             .padding(.top, 30)
             
+            if let result = analysisResult {
+                ScrollView {
+                    Text(result)
+                        .font(.custom("SF Pro", size: 14))
+                        .kerning(-0.28)
+                        .foregroundColor(.primary)
+                        .padding()
+                        .background(Color.lightGray)
+                        .cornerRadius(12)
+                        .padding(.horizontal, 30)
+                }
+                .frame(maxHeight: 200)
+                .padding(.top, 16)
+            }
+
             Spacer()
             
             Button(action: {
@@ -617,6 +665,9 @@ struct CameraView: View {
             }
             .padding(.horizontal, 30)
             .padding(.bottom, 40)
+        }
+        .sheet(isPresented: $showImagePicker) {
+            ImagePicker(image: $capturedImage, sourceType: .photoLibrary)
         }
     }
 }
@@ -909,6 +960,40 @@ struct ProfileRow: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(Color.gray.opacity(0.3), lineWidth: 1)
         )
+    }
+}
+
+struct ImagePicker: UIViewControllerRepresentable {
+    @Binding var image: UIImage?
+    var sourceType: UIImagePickerController.SourceType
+    @Environment(\.presentationMode) var presentationMode
+    
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.sourceType = sourceType
+        picker.delegate = context.coordinator
+        return picker
+    }
+    
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        let parent: ImagePicker
+        
+        init(_ parent: ImagePicker) {
+            self.parent = parent
+        }
+        
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+            if let uiImage = info[.originalImage] as? UIImage {
+                parent.image = uiImage
+            }
+            parent.presentationMode.wrappedValue.dismiss()
+        }
     }
 }
 

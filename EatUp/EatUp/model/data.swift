@@ -682,7 +682,7 @@ struct ClaudeAnalysisResult {
     let healthScore: Float
     let portionQualityScore: Float
     let varietyScore: Float
-    let macroBalanceScore: Float
+    let nutritionBalanceScore: Float
     let recommendations: String
 }
 
