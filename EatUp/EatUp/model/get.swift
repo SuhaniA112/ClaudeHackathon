@@ -5,7 +5,6 @@
 //  Created by Suhani Aggarwal on 11/15/25.
 //
 
-<<<<<<< HEAD
 import Foundation
 
 // Helper functions to fetch user data
@@ -92,43 +91,3 @@ func getPastMealsSummary(userId: UUID) -> String {
     - Health Score: \(String(format: "%.1f", avgHealthScore))/10
     """
 }
-=======
-func getAge(uid: Int) -> Int {
-    let userManager = UserManager()
-    return userManager.getUserById(uid).age
-}
-
-func getWeight(uid: Int) -> Int {
-    let userManager = UserManager()
-    return userManager.getUserById(uid).weight
-}
-
-func getHeight(uid: Int) -> Int {
-    let userManager = UserManager()
-    return userManager.getUserById(uid).height
-}
-
-func getExercise(uid: Int) -> Double{
-    let userManager = UserManager()
-    return userManager.getUserById(uid).activityLevel
-}
-
-func getGender(uid: Int) -> String {
-    let userManager = UserManager()
-    return userManager.getUserById(uid)?.gender
-}
-
-func getRestriction(uid: Int) -> String {
-    let userManager = UserManager()
-    return userManager.getUserById(uid).dietType
-}
-
-func getGoal(uid: Int) -> String {
-    let userManager = UserManager()
-    return userManager.getUserById(uid).healthGoal
-}
-
-func getPast(uid: Int) -> String {
-    return "0" // TODO
-}
->>>>>>> f2313d40c0c3eeedcddfa5f3b444c3bbf86d9e04

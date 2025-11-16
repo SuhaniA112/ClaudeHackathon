@@ -673,7 +673,6 @@ struct UserProfileData {
 
 struct ClaudeAnalysisResult {
     let protein: Float
-<<<<<<< HEAD
     let carbs: Float
     let fat: Float
     let fiber: Float
@@ -685,19 +684,67 @@ struct ClaudeAnalysisResult {
     let varietyScore: Float
     let nutritionBalanceScore: Float
     let recommendations: String
-=======
-        let carbs: Float
-        let fat: Float
-        let fiber: Float
-        let sugar: Float
-        let sodium: Float
-        let foodItems: [String]
-        let healthScore: Float
-        let portionQualityScore: Float
-        let varietyScore: Float
-        let nutritionBalanceScore: Float
-        let recommendations: String
->>>>>>> f2313d40c0c3eeedcddfa5f3b444c3bbf86d9e04
+}
+
+// Make ClaudeAnalysisResult Codable with robust decoding to tolerate
+// numbers as ints/doubles/strings and `foodItems` as string or array.
+extension ClaudeAnalysisResult: Codable {
+    enum CodingKeys: String, CodingKey {
+        case protein, carbs, fat, fiber, sugar, sodium
+        case foodItems, healthScore, portionQualityScore
+        case varietyScore, nutritionBalanceScore, recommendations
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        func decodeFloat(_ key: CodingKeys) -> Float {
+            if let val = try? container.decodeIfPresent(Float.self, forKey: key) { return val }
+            if let val = try? container.decodeIfPresent(Double.self, forKey: key) { return Float(val) }
+            if let val = try? container.decodeIfPresent(Int.self, forKey: key) { return Float(val) }
+            if let str = try? container.decodeIfPresent(String.self, forKey: key), let f = Float(str) { return f }
+            return 0.0
+        }
+
+        protein = decodeFloat(.protein)
+        carbs = decodeFloat(.carbs)
+        fat = decodeFloat(.fat)
+        fiber = decodeFloat(.fiber)
+        sugar = decodeFloat(.sugar)
+        sodium = decodeFloat(.sodium)
+
+        // foodItems may be a String or an array of strings
+        if let itemsString = try? container.decodeIfPresent(String.self, forKey: .foodItems), let s = itemsString {
+            foodItems = s
+        } else if let itemsArray = try? container.decodeIfPresent([String].self, forKey: .foodItems), let arr = itemsArray {
+            foodItems = arr.joined(separator: ", ")
+        } else {
+            foodItems = ""
+        }
+
+        healthScore = decodeFloat(.healthScore)
+        portionQualityScore = decodeFloat(.portionQualityScore)
+        varietyScore = decodeFloat(.varietyScore)
+        nutritionBalanceScore = decodeFloat(.nutritionBalanceScore)
+
+        recommendations = (try? container.decodeIfPresent(String.self, forKey: .recommendations)) ?? ""
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(protein, forKey: .protein)
+        try container.encode(carbs, forKey: .carbs)
+        try container.encode(fat, forKey: .fat)
+        try container.encode(fiber, forKey: .fiber)
+        try container.encode(sugar, forKey: .sugar)
+        try container.encode(sodium, forKey: .sodium)
+        try container.encode(foodItems, forKey: .foodItems)
+        try container.encode(healthScore, forKey: .healthScore)
+        try container.encode(portionQualityScore, forKey: .portionQualityScore)
+        try container.encode(varietyScore, forKey: .varietyScore)
+        try container.encode(nutritionBalanceScore, forKey: .nutritionBalanceScore)
+        try container.encode(recommendations, forKey: .recommendations)
+    }
 }
 
 struct DailyNutritionTotals {
